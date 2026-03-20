@@ -302,7 +302,17 @@ const ProjectModal: React.FC<{ project: Project; onClose: () => void }> = ({ pro
 export default function App() {
   const [projects, setProjects] = useState<Project[]>(projectsData);
   const [visibleCount, setVisibleCount] = useState(8);
-  const [activeTab, setActiveTab] = useState<string>("Home");
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    if (tabParam) {
+      const formatted = tabParam.charAt(0).toUpperCase() + tabParam.slice(1).toLowerCase();
+      if (["Home", "About", "Works", "Services", "Contact"].includes(formatted)) {
+        return formatted;
+      }
+    }
+    return "Home";
+  });
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -317,15 +327,40 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const handlePopState = () => {
+    window.history.replaceState({ tab: activeTab }, "", `?tab=${activeTab.toLowerCase()}`);
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
       if (selectedProject) {
         setSelectedProject(null);
+      }
+      
+      if (event.state?.tab) {
+        setActiveTab(event.state.tab);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const tabParam = params.get("tab");
+        if (tabParam) {
+          const formatted = tabParam.charAt(0).toUpperCase() + tabParam.slice(1).toLowerCase();
+          if (["Home", "About", "Works", "Services", "Contact"].includes(formatted)) {
+            setActiveTab(formatted);
+            return;
+          }
+        }
+        setActiveTab("Home");
       }
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [selectedProject]);
+
+  const handleTabChange = (tab: string) => {
+    if (tab === activeTab) return;
+    setActiveTab(tab);
+    window.history.pushState({ tab }, "", `?tab=${tab.toLowerCase()}`);
+  };
 
   const handleOpenProject = (project: Project) => {
     setSelectedProject(project);
@@ -350,7 +385,7 @@ export default function App() {
     <div className="min-h-screen bg-black flex flex-col">
       <Navbar 
         activeTab={activeTab} 
-        onTabChange={setActiveTab} 
+        onTabChange={handleTabChange} 
         isScrolled={isScrolled}
       />
       
