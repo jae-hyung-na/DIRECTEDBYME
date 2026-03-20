@@ -73,7 +73,7 @@ export const projectsData: Project[] = [
     "display_category": "Sound",
     "video_url": "https://www.youtube.com/embed/rpfYI3mXFYo",
     "thumbnail_url": "/035_졸업이라니.jpg",
-    "role": "Recording Engineer (Track 3), Digital Editing (Track 1, 3), Mixing Engineer (Track 3), Mastering Engineer (Track 2, 3), A&R Producer, Promotion Planning & Design, Art Design",
+    "role": "Producer (Track 3), Co-wrote (Track 3), Recording Engineer (Track 3), Digital Editing (Track 1, 3), \nMixing Engineer (Track 3), Mastering Engineer (Track 2, 3), \nA&R Producer, Promotion Planning & Design, Art Design",
     "credits": "Artist | Youngjin Ahn\nExecutive Producer | Youngjin Ahn\nAlbum Producer | Youngjin Ahn\n\nRecording Engineer | Youngjin Ahn, Jaehyeong Na at SOUNDCAMP\nDigital Editing Engineer | Jaehyeong Na at SOUNDCAMP, Youngjin Ahn\nMixing Engineer | Lia Lee at Lia Sounds, Youngjin Ahn, Jaehyeong Na at SOUNDCAMP\nMastering Engineer | Jaehyeong Na at SOUNDCAMP, Lia Lee at Lia Sounds\n\nA&R Producer | Jaehyeong Na\nPromotion Planning & Design | Jaehyeong Na\n\nPhotography | Mingyu Chae\nMusic Video Director | Youngjin Ahn\nMusic Video Cinematographer | Mingyu Chae\nArt Direction | Youngjin Ahn\nArt Design | Youngjin Ahn, Jaehyeong Na",
     "year": "2024",
     "created_at": "2026-03-19 03:49:13"
