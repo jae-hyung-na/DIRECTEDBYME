@@ -369,14 +369,25 @@ export default function App() {
 
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      if (selectedProject) {
+      if (event.state?.modalOpen && event.state?.projectId) {
+        const projectToOpen = projects.find(p => p.id === event.state.projectId);
+        if (projectToOpen) {
+          setSelectedProject(projectToOpen);
+        }
+      } else if (selectedProject) {
         setSelectedProject(null);
+      }
+      
+      if (event.state?.category) {
+        setActiveCategory(event.state.category);
+      } else {
+        setActiveCategory("ALL");
       }
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [selectedProject]);
+  }, [selectedProject, projects]);
 
   const handleTabChange = (tab: string) => {
     if (tab === activeTab) return;
@@ -384,9 +395,16 @@ export default function App() {
     window.location.hash = tab.toLowerCase();
   };
 
+  const handleCategoryChange = (cat: string) => {
+    if (cat === activeCategory) return;
+    setActiveCategory(cat);
+    setVisibleCount(8);
+    window.history.pushState({ category: cat }, "", window.location.hash);
+  };
+
   const handleOpenProject = (project: Project) => {
     setSelectedProject(project);
-    window.history.pushState({ modalOpen: true }, "");
+    window.history.pushState({ modalOpen: true, projectId: project.id, category: activeCategory }, "");
   };
 
   const handleCloseProject = () => {
@@ -434,10 +452,7 @@ export default function App() {
                   {["ALL", "Content", "Sound"].map(cat => (
                     <button
                       key={cat}
-                      onClick={() => {
-                        setActiveCategory(cat);
-                        setVisibleCount(8); // Reset count when changing category
-                      }}
+                      onClick={() => handleCategoryChange(cat)}
                       className={`px-6 py-3 text-[10px] md:text-xs tracking-tight uppercase border font-bold transition-all duration-300 ${
                         activeCategory === cat
                           ? "bg-white text-black border-white"
