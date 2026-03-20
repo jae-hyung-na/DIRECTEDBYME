@@ -316,6 +316,29 @@ export default function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handlePopState = () => {
+      if (selectedProject) {
+        setSelectedProject(null);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [selectedProject]);
+
+  const handleOpenProject = (project: Project) => {
+    setSelectedProject(project);
+    window.history.pushState({ modalOpen: true }, "");
+  };
+
+  const handleCloseProject = () => {
+    setSelectedProject(null);
+    if (window.history.state?.modalOpen) {
+      window.history.back();
+    }
+  };
+
   const filteredProjects = projects.filter(p => {
     if (activeCategory === "ALL") return true;
     return p.category === activeCategory;
@@ -375,7 +398,7 @@ export default function App() {
                   <ProjectItem 
                     key={project.id} 
                     project={project} 
-                    onClick={() => setSelectedProject(project)} 
+                    onClick={() => handleOpenProject(project)} 
                   />
                 ))}
               </div>
@@ -407,7 +430,7 @@ export default function App() {
         {selectedProject && (
           <ProjectModal 
             project={selectedProject} 
-            onClose={() => setSelectedProject(null)} 
+            onClose={handleCloseProject} 
           />
         )}
       </AnimatePresence>
