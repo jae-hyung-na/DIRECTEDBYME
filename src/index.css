@@ -11,9 +11,11 @@
 
 @layer base {
   body {
-    @apply bg-paper text-ink selection:bg-accent selection:text-paper;
+    @apply bg-black text-white selection:bg-white selection:text-black;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    background-color: #000000;
+    color: #FFFFFF;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -40,7 +42,7 @@
 }
 
 .project-item {
-  @apply relative aspect-video overflow-hidden border border-zinc-950 bg-zinc-900;
+  @apply relative aspect-video overflow-hidden border border-zinc-900 bg-zinc-950;
 }
 
 .project-overlay {
@@ -64,4 +66,3 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
-

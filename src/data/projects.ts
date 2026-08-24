@@ -35,7 +35,7 @@ export const projectsData: Project[] = [
     "video_url": "https://www.youtube.com/embed/jw0FpHyKs2U",
     "thumbnail_url": "/038_따라가보자고.jpg",
     "role": "Producer, Recording Engineer, Digital Editing, Mix & Mastering Engineer",
-    "credits": "Artist | Youngin Ahn\nExecutive Producer | Youngin Ahn\n\nProducer | Jaehyeong Na\nRecording Engineer | Youngin Ahn, Jaehyeong Na at SOUNDCAMP\nDigital Editing Engineer | Jaehyeong Na at SOUNDCAMP\nMixing Engineer | Jaehyeong Na at SOUNDCAMP\nMastering Engineer | Jaehyeong Na at SOUNDCAMP",
+    "credits": "Artist | Youngin Ahn\nExecutive Producer | Youngin Ahn\nAlbum Producer | Jaehyeong Na\nRecording Engineer | Youngin Ahn, Jaehyeong Na at SOUNDCAMP\nDigital Editing Engineer | Jaehyeong Na at SOUNDCAMP\nMixing Engineer | Jaehyeong Na at SOUNDCAMP\nMastering Engineer | Jaehyeong Na at SOUNDCAMP\n\nArtwork｜Youngjin Ahn",
     "year": "2025",
     "created_at": "2026-03-19 03:49:13"
   },
@@ -73,8 +73,8 @@ export const projectsData: Project[] = [
     "display_category": "Sound",
     "video_url": "https://www.youtube.com/embed/rpfYI3mXFYo",
     "thumbnail_url": "/035_졸업이라니.jpg",
-    "role": "Producer (Track 3), Co-wrote (Track 3), Recording Engineer (Track 3), Digital Editing (Track 1, 3), \nMixing Engineer (Track 3), Mastering Engineer (Track 2, 3), \nA&R Producer, Promotion Planning & Design, Art Design",
-    "credits": "Artist | Youngjin Ahn\nExecutive Producer | Youngjin Ahn\nAlbum Producer | Youngjin Ahn\n\nRecording Engineer | Youngjin Ahn, Jaehyeong Na at SOUNDCAMP\nDigital Editing Engineer | Jaehyeong Na at SOUNDCAMP, Youngjin Ahn\nMixing Engineer | Lia Lee at Lia Sounds, Youngjin Ahn, Jaehyeong Na at SOUNDCAMP\nMastering Engineer | Jaehyeong Na at SOUNDCAMP, Lia Lee at Lia Sounds\n\nA&R Producer | Jaehyeong Na\nPromotion Planning & Design | Jaehyeong Na\n\nPhotography | Mingyu Chae\nMusic Video Director | Youngjin Ahn\nMusic Video Cinematographer | Mingyu Chae\nArt Direction | Youngjin Ahn\nArt Design | Youngjin Ahn, Jaehyeong Na",
+    "role": "Producer (Track 3), Co-wrote (Track 3), Recording Engineer (Track 3), Digital Editing (Track 1, 3),\nMixing Engineer (Track 3), Mastering Engineer (Track 2, 3),\nA&R Producer, Media & Marketing, Co-artwork",
+    "credits": "Artists ｜ Youngjin Ahn\nExecutive Producer ｜ Youngjin Ahn\nAlbum Producer ｜ Youngjin Ahn\nRecording Engineer ｜ Youngjin Ahn (Track 1, 2, 3),  Jaehyeong Na at SOUNDCAMP (Track 3)\nDigital Editing Engineer ｜ Jaehyeong Na at SOUNDCAMP (Track 1, 3), Lia Lee at Lia Sounds (Track 1)\nMixing Engineer ｜ Jaehyeong Na at SOUNDCAMP (Track 3), Lia Lee at Lia Sounds (Track 1), 안영진 (Track 2)\nMastering Engineer ｜ Jaehyeong Na at SOUNDCAMP (Track 2, 3), Lia Lee at Lia Sounds (Track 1)\n\nA&R Producer ｜ Jaehyeong Na\nMedia & Marketing ｜ Jaehyeong Na\nPhotography ｜ Mingyu Chae\nArt Direction ｜ Youngjin Ahn\nArtwork ｜ Youngjin Ahn, Jaehyeong Na",
     "year": "2024",
     "created_at": "2026-03-19 03:49:13"
   },

@@ -1,28 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
-  Play, 
   X, 
-  Instagram, 
-  Youtube, 
-  Mail, 
-  Plus, 
-  Trash2, 
-  Edit2, 
-  LogOut,
   ArrowLeft,
-  ArrowRight,
-  Menu,
-  Settings
+  ArrowRight
 } from "lucide-react";
 import { Project } from "./types";
 import { projectsData } from "./data/projects";
 
+// --- Toast Component ---
+const Toast: React.FC<{ message: string | null }> = ({ message }) => (
+  <AnimatePresence>
+    {message && (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        className="fixed bottom-8 right-8 z-[300] bg-zinc-900 border border-zinc-700 text-white px-5 py-3 rounded text-xs font-medium tracking-tight shadow-xl"
+      >
+        {message}
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
 // --- Components ---
 const Navbar: React.FC<{ 
-  activeTab: string, 
-  onTabChange: (tab: string) => void,
-  isScrolled: boolean
+  activeTab: string; 
+  onTabChange: (tab: string) => void;
+  isScrolled: boolean;
 }> = ({ activeTab, onTabChange, isScrolled }) => (
   <nav className={`fixed top-0 left-0 w-full z-[100] flex justify-center items-center gap-4 md:gap-8 ${
     isScrolled 
@@ -106,15 +112,15 @@ const AboutSection: React.FC = () => (
         <div className="space-y-4 text-zinc-400 leading-relaxed">
           <p>
             시네마틱한 영상 연출과 정교한 사운드 설계를 결합해 서사를 구축하는 
-			영상 연출가이자 사운드 엔지니어입니다. 촬영, 편집, 사운드 디자인을 아우르며 
-			아이디어를 시각적 경험으로 구현하는 작업을 합니다.
+            영상 연출가이자 사운드 엔지니어입니다. 촬영, 편집, 사운드 디자인을 아우르며 
+            아이디어를 시각적 경험으로 구현하는 작업을 합니다.
           </p>
           <p>
-			2025년 동서대학교 방송영상학과를 졸업했으며 현재 부산을 기반으로 
-			영상 작업과 포트폴리오 프로젝트를 진행하고 있습니다.
+            2025년 동서대학교 방송영상학과를 졸업했으며 현재 부산을 기반으로 
+            영상 작업과 포트폴리오 프로젝트를 진행하고 있습니다.
           </p>
           <p>
-			모든 작업에서 장면의 리듬, 사운드의 밀도, 서사의 흐름을 함께 설계하는 것을 중요하게 생각합니다.
+            모든 작업에서 장면의 리듬, 사운드의 밀도, 서사의 흐름을 함께 설계하는 것을 중요하게 생각합니다.
           </p>
         </div>
         
@@ -179,7 +185,7 @@ const ServicesSection: React.FC = () => (
   </motion.div>
 );
 
-const ContactSection: React.FC = () => (
+const ContactSection: React.FC<{ onCopy: (text: string, label: string) => void }> = ({ onCopy }) => (
   <motion.div 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -199,16 +205,22 @@ const ContactSection: React.FC = () => (
 
         <div className="space-y-4">
           <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Phone</h4>
-          <a href="tel:+821073057415" className="block text-xl md:text-3xl font-medium hover:text-zinc-400 transition-colors">
+          <button 
+            onClick={() => onCopy("+82 10-7305-7415", "전화번호")}
+            className="block mx-auto text-xl md:text-3xl font-medium hover:text-zinc-400 transition-colors cursor-pointer"
+          >
             +82 10-7305-7415
-          </a>
+          </button>
         </div>
 
         <div className="space-y-4">
           <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">E-Mail</h4>
-          <a href="mailto:iaminrighthere@gmail.com" className="block text-xl md:text-3xl font-medium hover:text-zinc-400 transition-colors">
+          <button 
+            onClick={() => onCopy("iaminrighthere@gmail.com", "이메일 주소")}
+            className="block mx-auto text-xl md:text-3xl font-medium hover:text-zinc-400 transition-colors cursor-pointer"
+          >
             iaminrighthere@gmail.com
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -229,7 +241,7 @@ const ProjectItem: React.FC<{ project: Project; onClick: () => void }> = ({ proj
     <img 
       src={project.thumbnail_url} 
       alt={project.title} 
-      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
       referrerPolicy="no-referrer"
     />
     {/* Dark Overlay */}
@@ -248,60 +260,105 @@ const ProjectItem: React.FC<{ project: Project; onClick: () => void }> = ({ proj
   </motion.div>
 );
 
-const ProjectModal: React.FC<{ project: Project; onClose: () => void }> = ({ project, onClose }) => (
-  <motion.div 
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className="fixed inset-0 z-[200] overflow-y-auto bg-black/100 backdrop-blur-sm p-4 md:p-10"
-  >
-    <button 
-      onClick={onClose}
-      className="fixed top-6 right-6 md:top-10 md:right-10 text-white hover:text-accent transition-all z-10"
+const ProjectModal: React.FC<{ 
+  project: Project; 
+  allProjects: Project[];
+  onClose: () => void;
+  onSelectProject: (p: Project) => void;
+}> = ({ project, allProjects, onClose, onSelectProject }) => {
+  const currentIndex = allProjects.findIndex(p => p.id === project.id);
+  const prevProject = currentIndex > 0 ? allProjects[currentIndex - 1] : null;
+  const nextProject = currentIndex < allProjects.length - 1 ? allProjects[currentIndex + 1] : null;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft" && prevProject) onSelectProject(prevProject);
+      if (e.key === "ArrowRight" && nextProject) onSelectProject(nextProject);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, onSelectProject, prevProject, nextProject]);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[200] overflow-y-auto bg-black/100 backdrop-blur-sm p-4 md:p-10"
     >
-      <X size={32} />
-    </button>
-    
-    <div className="w-full max-w-6xl mx-auto flex flex-col items-center py-10 min-h-full">
-      <div className="aspect-video w-full bg-zinc-900 mb-12 shadow-2xl">
-        <iframe 
-          src={project.video_url} 
-          className="w-full h-full"
-          allow="autoplay; fullscreen"
-          title={project.title}
-        />
+      <div className="fixed top-6 right-6 md:top-10 md:right-10 flex items-center gap-4 z-10">
+        {prevProject && (
+          <button 
+            onClick={() => onSelectProject(prevProject)}
+            className="text-zinc-500 hover:text-white transition-all p-1 cursor-pointer"
+            title="이전 프로젝트 (←)"
+          >
+            <ArrowLeft size={28} />
+          </button>
+        )}
+        {nextProject && (
+          <button 
+            onClick={() => onSelectProject(nextProject)}
+            className="text-zinc-500 hover:text-white transition-all p-1 cursor-pointer"
+            title="다음 프로젝트 (→)"
+          >
+            <ArrowRight size={28} />
+          </button>
+        )}
+        <button 
+          onClick={onClose}
+          className="text-white hover:text-zinc-400 transition-all p-1 ml-2 cursor-pointer"
+          title="닫기 (ESC)"
+        >
+          <X size={32} />
+        </button>
       </div>
-      <div className="flex flex-col items-center text-center max-w-3xl">
-        <span className="text-accent text-xs font-bold tracking-[0.4em] uppercase mb-6">
-          {project.display_category || project.category}{project.year ? ` • ${project.year}` : ''}
-        </span>
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-10">{project.title}</h2>
-        
-        <div className="flex flex-col items-start text-left w-full border-t border-zinc-900 pt-12 space-y-12">
-          {project.role && (
-            <div>
-              <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-6">Role</h4>
-              <p className="text-zinc-400 text-sm whitespace-pre-line leading-loose max-w-3xl">
-                {project.role}
-              </p>
-            </div>
-          )}
+      
+      <div className="w-full max-w-6xl mx-auto flex flex-col items-center py-10 min-h-full">
+        <div className="aspect-video w-full bg-zinc-900 mb-12 shadow-2xl">
+          <iframe 
+            src={project.video_url} 
+            className="w-full h-full"
+            allow="autoplay; fullscreen"
+            title={project.title}
+          />
+        </div>
+        <div className="flex flex-col items-center text-center max-w-3xl">
+          <span className="text-accent text-xs font-bold tracking-[0.4em] uppercase mb-6">
+            {project.display_category || project.category}{project.year ? ` • ${project.year}` : ''}
+          </span>
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-10 text-white">{project.title}</h2>
           
-          <div>
-            <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-6">Credits</h4>
-            <p className="text-zinc-400 text-sm whitespace-pre-line leading-loose max-w-3xl">{project.credits}</p>
+          <div className="flex flex-col items-start text-left w-full border-t border-zinc-900 pt-12 space-y-12">
+            {project.role && (
+              <div>
+                <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-6">Role</h4>
+                <p className="text-zinc-400 text-sm whitespace-pre-line leading-loose max-w-3xl">
+                  {project.role}
+                </p>
+              </div>
+            )}
+            
+            <div>
+              <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-6">Credits</h4>
+              <p className="text-zinc-400 text-sm whitespace-pre-line leading-loose max-w-3xl">{project.credits}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 // --- Main App ---
 
 export default function App() {
-  const [projects, setProjects] = useState<Project[]>(projectsData);
+  const [projects] = useState<Project[]>(projectsData);
   const [visibleCount, setVisibleCount] = useState(8);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<string>(() => {
     const hash = window.location.hash.replace("#", "");
     if (hash) {
@@ -320,10 +377,12 @@ export default function App() {
     }
     return "Home";
   });
+
   const [activeCategory, setActiveCategory] = useState<string>(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get("category") || "ALL";
   });
+
   const [selectedProject, setSelectedProject] = useState<Project | null>(() => {
     const params = new URLSearchParams(window.location.search);
     const projectId = params.get("project");
@@ -332,6 +391,7 @@ export default function App() {
     }
     return null;
   });
+
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -347,7 +407,7 @@ export default function App() {
     if (!window.location.hash && !window.location.search.includes("tab=")) {
       window.history.replaceState(null, "", `#${activeTab.toLowerCase()}`);
     }
-  }, []);
+  }, [activeTab]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -397,6 +457,18 @@ export default function App() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [projects]);
 
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 2500);
+  };
+
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    showToast(`${label}이(가) 클립보드에 복사되었습니다.`);
+  };
+
   const handleTabChange = (tab: string) => {
     if (tab === activeTab) return;
     setActiveTab(tab);
@@ -435,15 +507,26 @@ export default function App() {
     }
   };
 
-  const filteredProjects = projects.filter(p => {
-    if (activeCategory === "ALL") return true;
-    return p.category === activeCategory;
-  });
+  const counts = useMemo(() => {
+    const all = projects.length;
+    const content = projects.filter(p => p.category.toLowerCase() === "content").length;
+    const sound = projects.filter(p => p.category.toLowerCase() === "sound").length;
+    return { ALL: all, Content: content, Sound: sound };
+  }, [projects]);
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter(p => {
+      if (activeCategory === "ALL") return true;
+      return p.category.toLowerCase() === activeCategory.toLowerCase();
+    });
+  }, [projects, activeCategory]);
 
   const visibleProjects = filteredProjects.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
+      <Toast message={toastMessage} />
+
       <Navbar 
         activeTab={activeTab} 
         onTabChange={handleTabChange} 
@@ -470,17 +553,21 @@ export default function App() {
             >
               <div className="flex flex-col items-center mb-16 px-4">
                 <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-                  {["ALL", "Content", "Sound"].map(cat => (
+                  {[
+                    { id: "ALL", label: `ALL (${counts.ALL})` },
+                    { id: "Content", label: `CONTENT (${counts.Content})` },
+                    { id: "Sound", label: `SOUND (${counts.Sound})` }
+                  ].map(cat => (
                     <button
-                      key={cat}
-                      onClick={() => handleCategoryChange(cat)}
-                      className={`px-6 py-3 text-[10px] md:text-xs tracking-tight uppercase border font-bold transition-all duration-300 ${
-                        activeCategory === cat
+                      key={cat.id}
+                      onClick={() => handleCategoryChange(cat.id)}
+                      className={`px-6 py-3 text-[10px] md:text-xs tracking-tight uppercase border font-bold transition-all duration-300 cursor-pointer ${
+                        activeCategory.toUpperCase() === cat.id.toUpperCase()
                           ? "bg-white text-black border-white"
                           : "bg-black text-white border-white/20 hover:border-white/50"
                       }`}
                     >
-                      {cat}
+                      {cat.label}
                     </button>
                   ))}
                 </div>
@@ -500,7 +587,7 @@ export default function App() {
                 <div className="py-20 flex justify-center">
                   <button 
                     onClick={() => setVisibleCount(prev => prev + 8)}
-                    className="bg-zinc-900 text-white px-12 py-4 rounded-sm text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all"
+                    className="bg-zinc-900 text-white px-12 py-4 rounded-sm text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all cursor-pointer"
                   >
                     Load More
                   </button>
@@ -514,7 +601,10 @@ export default function App() {
           )}
 
           {activeTab === "Contact" && (
-            <ContactSection key="contact" />
+            <ContactSection 
+              key="contact" 
+              onCopy={handleCopy}
+            />
           )}
         </AnimatePresence>
       </main>
@@ -523,7 +613,9 @@ export default function App() {
         {selectedProject && (
           <ProjectModal 
             project={selectedProject} 
+            allProjects={filteredProjects}
             onClose={handleCloseProject} 
+            onSelectProject={handleOpenProject}
           />
         )}
       </AnimatePresence>
