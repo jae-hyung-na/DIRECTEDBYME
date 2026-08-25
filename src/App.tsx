@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
-  X, 
-  ArrowLeft,
-  ArrowRight
+  X
 } from "lucide-react";
 import { Project } from "./types";
 import { projectsData } from "./data/projects";
@@ -266,20 +264,15 @@ const ProjectModal: React.FC<{
   onClose: () => void;
   onSelectProject: (p: Project) => void;
 }> = ({ project, allProjects, onClose, onSelectProject }) => {
-  const currentIndex = allProjects.findIndex(p => p.id === project.id);
-  const prevProject = currentIndex > 0 ? allProjects[currentIndex - 1] : null;
-  const nextProject = currentIndex < allProjects.length - 1 ? allProjects[currentIndex + 1] : null;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft" && prevProject) onSelectProject(prevProject);
-      if (e.key === "ArrowRight" && nextProject) onSelectProject(nextProject);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose, onSelectProject, prevProject, nextProject]);
+  }, [onClose]);
 
   return (
     <motion.div 
@@ -289,24 +282,6 @@ const ProjectModal: React.FC<{
       className="fixed inset-0 z-[200] overflow-y-auto bg-black/100 backdrop-blur-sm p-4 md:p-10"
     >
       <div className="fixed top-6 right-6 md:top-10 md:right-10 flex items-center gap-4 z-10">
-        {prevProject && (
-          <button 
-            onClick={() => onSelectProject(prevProject)}
-            className="text-zinc-500 hover:text-white transition-all p-1 cursor-pointer"
-            title="이전 프로젝트 (←)"
-          >
-            <ArrowLeft size={28} />
-          </button>
-        )}
-        {nextProject && (
-          <button 
-            onClick={() => onSelectProject(nextProject)}
-            className="text-zinc-500 hover:text-white transition-all p-1 cursor-pointer"
-            title="다음 프로젝트 (→)"
-          >
-            <ArrowRight size={28} />
-          </button>
-        )}
         <button 
           onClick={onClose}
           className="text-white hover:text-zinc-400 transition-all p-1 ml-2 cursor-pointer"
